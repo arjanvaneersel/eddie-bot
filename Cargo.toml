@@ -1,8 +1,17 @@
-[package]
-name = "eddie-bot"
+[workspace.package]
 version = "0.1.0"
+authors = ["Arjan van Eersel <arjan@vaneersel.me>"]
+description = "IncentiVerse mini node for the Polkadot Hackathon"
 edition = "2021"
+license = "GPL3"
+repository = "https://github.com/arjanvaneersel/eddie-bot"
+# TODO: Create page for project
+# homepage = "https://arjan.vaneersel.me/eddie"
+
+[workspace]
+resolver = "2"
+members = ["core", "eddie-bin", "eddie-lib", "transport"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
+[workspace.dependencies]
