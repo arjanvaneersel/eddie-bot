@@ -1,10 +1,9 @@
-use crate::{
-    bot::{Bot, Result},
-    config::Config,
-};
+use crate::{bot::Bot, config::Config};
+use support::traits::dispatch::DispatchResult;
 
 impl<T: Config> Bot<T> {
-    fn do_test() -> Result<()> {
-        todo!()
+    pub fn do_test(&self) -> DispatchResult<()> {
+        log::info!("Test worked!");
+        Ok(())
     }
 }

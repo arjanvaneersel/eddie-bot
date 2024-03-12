@@ -11,3 +11,4 @@ repository.workspace = true
 
 [dependencies]
 support = { workspace = true }
+log = { workspace = true }

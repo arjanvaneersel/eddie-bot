@@ -87,7 +87,7 @@ macro_rules! param {
                 $v
             }
         }
-        impl<I: From<$t>> $crate::support::traits::get::Get<I> for $name {
+        impl<I: From<$t>> $crate::traits::get::Get<I> for $name {
             fn get() -> I {
                 I::from(Self::get())
             }
@@ -97,7 +97,7 @@ macro_rules! param {
                 fmt.write_str(&format!("{}<{}>", stringify!($name), stringify!($t)))
             }
         }
-        impl $crate::support::traits::get::TypedGet for $name {
+        impl $crate::traits::get::TypedGet for $name {
             type Type = $t;
             fn get() -> $t {
                 $v
