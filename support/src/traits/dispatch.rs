@@ -24,8 +24,7 @@ pub type DispatchResult<T> = std::result::Result<T, DispatchError>;
 /// Trait for dispatching calls.
 pub trait Dispatch {
     type Origin;
-    type Call;
     type Response;
 
-    fn dispatch(&self, origin: Self::Origin, call: Self::Call) -> DispatchResult<Self::Response>;
+    fn dispatch(&self, origin: Self::Origin) -> DispatchResult<Self::Response>;
 }

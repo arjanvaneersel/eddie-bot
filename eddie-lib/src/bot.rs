@@ -1,15 +1,7 @@
-use crate::{
-    call::{Call, Response},
-    config::Config,
-};
-use support::traits::{
-    dispatch::{DispatchError, DispatchResult},
-    Dispatch,
-};
+use crate::config::Config;
+use support::traits::dispatch::DispatchError;
 
 const MODULE: &'static str = "BOT";
-
-pub type Result<T> = std::result::Result<T, BotError>;
 
 #[derive(Clone, Debug)]
 /// All potential bot errors.
@@ -43,17 +35,5 @@ pub struct Bot<T: Config>(std::marker::PhantomData<T>);
 impl<T: Config> Bot<T> {
     pub fn new() -> Bot<T> {
         Bot(std::marker::PhantomData)
-    }
-}
-
-impl<T: Config> Dispatch for Bot<T> {
-    type Origin = ();
-    type Call = Call;
-    type Response = Option<Response>;
-
-    fn dispatch(&self, _origin: Self::Origin, call: Self::Call) -> DispatchResult<Self::Response> {
-        match call {
-            Call::Version => self.do_version(),
-        }
     }
 }

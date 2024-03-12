@@ -11,19 +11,19 @@ pub trait TypedGet {
 /// A trait for querying a single value from a type.
 ///
 /// It is not required that the value is constant.
-pub trait Get<T> {
+pub trait Get<T: Send + Sync> {
     fn get() -> T;
 }
 
 /// Implement Get by returning Default for any type that implements Default.
-impl<T: Default> Get<T> for () {
+impl<T: Default + Send + Sync> Get<T> for () {
     fn get() -> T {
         T::default()
     }
 }
 
 pub struct GetDefault;
-impl<T: Default> Get<T> for GetDefault {
+impl<T: Default + Send + Sync> Get<T> for GetDefault {
     fn get() -> T {
         T::default()
     }
@@ -87,7 +87,7 @@ macro_rules! param {
                 $v
             }
         }
-        impl<I: From<$t>> $crate::traits::get::Get<I> for $name {
+        impl<I: From<$t> + Send + Sync> $crate::traits::get::Get<I> for $name {
             fn get() -> I {
                 I::from(Self::get())
             }
@@ -101,6 +101,38 @@ macro_rules! param {
             type Type = $t;
             fn get() -> $t {
                 $v
+            }
+        }
+    };
+}
+
+#[macro_export]
+/// A macro to define parameters that implement the Get trait.
+macro_rules! env_param {
+    ($name:ident, $v:expr) => {
+        /// Const getter for an environment variable.
+        #[derive(Default, Clone)]
+        pub struct $name;
+
+        impl $name {
+            pub fn get() -> String {
+                std::env::var($v).expect(&format!("No {:?} in env", $v))
+            }
+        }
+        impl<I: From<String> + Send + Sync> $crate::traits::get::Get<I> for $name {
+            fn get() -> I {
+                I::from(Self::get())
+            }
+        }
+        impl core::fmt::Debug for $name {
+            fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {
+                fmt.write_str(&format!("{}<String>", stringify!($name)))
+            }
+        }
+        impl $crate::traits::get::TypedGet for $name {
+            type Type = String;
+            fn get() -> String {
+                Self::get()
             }
         }
     };

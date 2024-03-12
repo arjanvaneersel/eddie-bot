@@ -4,7 +4,7 @@ pub mod config;
 pub mod functions;
 
 pub use bot::Bot;
-pub use call::Call;
+pub use call::{Call, Response};
 pub use config::Config;
 
 #[cfg(test)]

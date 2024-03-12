@@ -7,7 +7,7 @@ type DispatchResult<T> = support::traits::dispatch::DispatchResult<Option<T>>;
 const VERSION: Option<&str> = option_env!("CARGO_PKG_VERSION");
 
 impl<T: Config> Bot<T> {
-    pub fn do_version(&self) -> DispatchResult<Response> {
+    pub fn version() -> DispatchResult<Response> {
         Ok(Some(Response::Version(format!(
             "{}",
             VERSION.unwrap_or("unknown")

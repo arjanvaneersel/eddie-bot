@@ -18,5 +18,12 @@ members = ["eddie-bin", "eddie-lib", "support", "transport"]
 eddie-lib = { path = "./eddie-lib" }
 support = { path = "./support" }
 transport = { path = "./transport" }
+
 log = "0.4.21"
 pretty_env_logger = "0.5.0"
+tokio = { version = "1.21.2", features = [
+    "macros",
+    "rt-multi-thread",
+    "signal",
+] }
+serenity = "0.12.1"
