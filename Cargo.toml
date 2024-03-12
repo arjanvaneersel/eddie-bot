@@ -10,8 +10,11 @@ repository = "https://github.com/arjanvaneersel/eddie-bot"
 
 [workspace]
 resolver = "2"
-members = ["core", "eddie-bin", "eddie-lib", "transport"]
+members = ["eddie-bin", "eddie-lib", "support", "transport"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.dependencies]
+eddie-lib = { path = "./eddie-lib" }
+support = { path = "./support" }
+transport = { path = "./transport" }

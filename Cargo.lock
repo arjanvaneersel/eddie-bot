@@ -3,15 +3,18 @@
 version = 3
 
 [[package]]
-name = "core"
-version = "0.1.0"
-
-[[package]]
 name = "eddie-bin"
 version = "0.1.0"
 
 [[package]]
 name = "eddie-lib"
+version = "0.1.0"
+dependencies = [
+ "support",
+]
+
+[[package]]
+name = "support"
 version = "0.1.0"
 
 [[package]]

@@ -1,5 +1,5 @@
 [package]
-name = "core"
+name = "support"
 version.workspace = true
 authors.workspace = true
 description.workspace = true
