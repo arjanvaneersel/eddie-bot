@@ -9,6 +9,8 @@ pub use config::Config;
 
 #[cfg(test)]
 mod tests {
+    use crate::call::Response;
+
     use super::*;
     use support::{param, traits::Dispatch};
 
@@ -27,7 +29,11 @@ mod tests {
     #[test]
     fn it_works() {
         let eddie = Bot::<Test>::new();
-        let result = eddie.dispatch((), Call::Test);
+        let result = eddie.dispatch((), Call::Version);
         assert!(result.is_ok());
+        assert_eq!(
+            result.unwrap(),
+            Some(Response::Version("0.1.0".to_string())),
+        )
     }
 }

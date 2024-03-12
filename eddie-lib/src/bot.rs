@@ -1,4 +1,7 @@
-use crate::{call::Call, config::Config};
+use crate::{
+    call::{Call, Response},
+    config::Config,
+};
 use support::traits::{
     dispatch::{DispatchError, DispatchResult},
     Dispatch,
@@ -46,11 +49,11 @@ impl<T: Config> Bot<T> {
 impl<T: Config> Dispatch for Bot<T> {
     type Origin = ();
     type Call = Call;
-    type Answer = ();
+    type Response = Option<Response>;
 
-    fn dispatch(&self, _origin: Self::Origin, call: Self::Call) -> DispatchResult<Self::Answer> {
+    fn dispatch(&self, _origin: Self::Origin, call: Self::Call) -> DispatchResult<Self::Response> {
         match call {
-            Call::Test => self.do_test(),
+            Call::Version => self.do_version(),
         }
     }
 }

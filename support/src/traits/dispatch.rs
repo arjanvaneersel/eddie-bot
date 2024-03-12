@@ -25,7 +25,7 @@ pub type DispatchResult<T> = std::result::Result<T, DispatchError>;
 pub trait Dispatch {
     type Origin;
     type Call;
-    type Answer;
+    type Response;
 
-    fn dispatch(&self, origin: Self::Origin, call: Self::Call) -> DispatchResult<Self::Answer>;
+    fn dispatch(&self, origin: Self::Origin, call: Self::Call) -> DispatchResult<Self::Response>;
 }
