@@ -18,15 +18,14 @@ impl std::fmt::Display for DispatchError {
 
 impl std::error::Error for DispatchError {}
 
+/// Type that models dispatch results.
+pub type DispatchResult<T> = std::result::Result<T, DispatchError>;
+
 /// Trait for dispatching calls.
 pub trait Dispatch {
     type Origin;
     type Call;
     type Answer;
 
-    fn dispatch(
-        &self,
-        origin: Self::Origin,
-        call: Self::Call,
-    ) -> Result<Self::Answer, DispatchError>;
+    fn dispatch(&self, origin: Self::Origin, call: Self::Call) -> DispatchResult<Self::Answer>;
 }

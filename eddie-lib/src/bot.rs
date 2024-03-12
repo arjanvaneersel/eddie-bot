@@ -1,5 +1,8 @@
 use crate::{call::Call, config::Config};
-use support::traits::{dispatch::DispatchError, Dispatch};
+use support::traits::{
+    dispatch::{DispatchError, DispatchResult},
+    Dispatch,
+};
 
 const MODULE: &'static str = "BOT";
 
@@ -37,11 +40,7 @@ impl<T: Config> Dispatch for Bot<T> {
     type Call = Call;
     type Answer = ();
 
-    fn dispatch(
-        &self,
-        origin: Self::Origin,
-        call: Self::Call,
-    ) -> Result<Self::Result, support::traits::dispatch::DispatchError> {
+    fn dispatch(&self, origin: Self::Origin, call: Self::Call) -> DispatchResult<Self::Answer> {
         todo!()
     }
 }
