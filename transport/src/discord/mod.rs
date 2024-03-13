@@ -1,3 +1,4 @@
+mod commands;
 pub mod config;
 pub mod discord;
 mod helpers;

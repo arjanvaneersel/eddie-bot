@@ -12,6 +12,7 @@ repository.workspace = true
 [dependencies]
 eddie-lib = { workspace = true }
 log = { workspace = true }
-serenity = { workspace = true }
+# serenity = { workspace = true }
 support = { workspace = true }
 tokio = { workspace = true }
+poise = { workspace = true }

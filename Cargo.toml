@@ -27,3 +27,4 @@ tokio = { version = "1.21.2", features = [
     "signal",
 ] }
 serenity = "0.12.1"
+poise = "0.6.1"
