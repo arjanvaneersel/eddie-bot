@@ -29,3 +29,14 @@ tokio = { version = "1.21.2", features = [
 serenity = "0.12.1"
 poise = "0.6.1"
 teloxide = { version = "0.12.2", features = ["macros"] }
+
+kv = "0.24.0"
+substrate-api-client = "0.17.0"
+sp-core = { git = "https://github.com/paritytech/polkadot-sdk", rev = "28f6225beb66a35167af5709606f1d76ca799ef6", features = [
+    "std",
+] }
+sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", rev = "28f6225beb66a35167af5709606f1d76ca799ef6", features = [
+    "std",
+] }
+regex = "1.10.3"
+serde = "1.0.197"

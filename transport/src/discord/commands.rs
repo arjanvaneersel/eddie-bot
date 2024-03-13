@@ -1,5 +1,5 @@
 use crate::discord::discord::{Context, Error};
-use eddie_lib::{Call, Config as BotConfig, Response};
+use eddie_lib::{origin::Origin, Call, Config as BotConfig, Response};
 use support::traits::Dispatch;
 
 use super::Config;
@@ -29,7 +29,8 @@ pub async fn help<T: Config + BotConfig>(
 /// Enter `$version` to get the bot's version
 #[poise::command(prefix_command, slash_command)]
 pub async fn version<T: Config + BotConfig>(ctx: Context<'_, T>) -> Result<(), Error> {
-    let response = (Call::<T>::Version).dispatch(());
+    let origin = Origin::Telegram(ctx.author().id.to_string());
+    let response = (Call::<T>::Version).dispatch(origin);
     log::info!("Received bot response: {:?}", response);
     match response {
         Ok(Some(Response::Version(version))) => {

@@ -3,7 +3,7 @@ use support::traits::{
     Dispatch,
 };
 
-use crate::{Bot, Config};
+use crate::{origin::Origin, Bot, Config};
 
 // #[derive(Clone, Debug, PartialEq)]
 // Collection of all possible origins.
@@ -20,7 +20,7 @@ pub enum Call<T: Config> {
 }
 
 impl<T: Config> Dispatch for Call<T> {
-    type Origin = ();
+    type Origin = Origin;
     type Response = Option<Response>;
 
     fn dispatch(&self, _origin: Self::Origin) -> DispatchResult<Self::Response> {

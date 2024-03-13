@@ -1,5 +1,5 @@
 use crate::telegram::Config;
-use eddie_lib::{Call, Response};
+use eddie_lib::{origin::Origin, Call, Response};
 use support::traits::{Dispatch, Get};
 use teloxide::{prelude::*, utils::command::BotCommands};
 
@@ -12,6 +12,12 @@ impl<T: Config> TelegramTransport<T> {
     }
 
     async fn process(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
+        let user = match msg.from() {
+            Some(user) => user,
+            None => return Ok(()),
+        };
+        let origin = Origin::Telegram(user.id.to_string());
+
         match cmd {
             Command::Help => {
                 bot.send_message(msg.chat.id, Command::descriptions().to_string())
@@ -19,7 +25,7 @@ impl<T: Config> TelegramTransport<T> {
                     .await?;
             }
             Command::Version => {
-                let response = (Call::<T>::Version).dispatch(());
+                let response = (Call::<T>::Version).dispatch(origin);
                 log::info!("Received bot response: {:?}", response);
                 match response {
                     Ok(Some(Response::Version(version))) => {

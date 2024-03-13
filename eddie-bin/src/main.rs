@@ -10,11 +10,13 @@ struct App;
 
 impl support::traits::Config for App {}
 
-env_param!(Name, "EDDIE_NAME");
+env_param!(Name, "EDDIE_NAME", "Eddie");
+env_param!(WalletSeed, "EDDIE_WALLET_SEED", "\\ALICE");
+env_param!(SubstrateRPC, "EDDIE_SUBSTRATE_RPC", "ws://127.0.0.1:9944");
 impl eddie_lib::Config for App {
     type Name = Name;
-    type WalletSeed = ();
-    type SubstrateRPC = ();
+    type WalletSeed = WalletSeed;
+    type SubstrateRPC = SubstrateRPC;
 }
 
 env_param!(DiscordToken, "EDDIE_DISCORD_TOKEN");

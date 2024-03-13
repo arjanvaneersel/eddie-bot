@@ -108,7 +108,35 @@ macro_rules! param {
 
 #[macro_export]
 /// A macro to define parameters that implement the Get trait.
+// TODO: Implement option with default
 macro_rules! env_param {
+    ($name:ident, $v:expr, $d:expr) => {
+        /// Const getter for an environment variable with a default value.
+        #[derive(Default, Clone)]
+        pub struct $name;
+
+        impl $name {
+            pub fn get() -> String {
+                std::env::var($v).unwrap_or($d.into())
+            }
+        }
+        impl<I: From<String> + Send + Sync> $crate::traits::get::Get<I> for $name {
+            fn get() -> I {
+                I::from(Self::get())
+            }
+        }
+        impl core::fmt::Debug for $name {
+            fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {
+                fmt.write_str(&format!("{}<String>", stringify!($name)))
+            }
+        }
+        impl $crate::traits::get::TypedGet for $name {
+            type Type = String;
+            fn get() -> String {
+                Self::get()
+            }
+        }
+    };
     ($name:ident, $v:expr) => {
         /// Const getter for an environment variable.
         #[derive(Default, Clone)]

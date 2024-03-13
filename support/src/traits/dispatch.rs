@@ -1,3 +1,5 @@
+use super::Origin;
+
 #[derive(Debug, Clone)]
 /// Collection of all possible dispatch errors.
 pub enum DispatchError {
@@ -23,7 +25,7 @@ pub type DispatchResult<T> = std::result::Result<T, DispatchError>;
 
 /// Trait for dispatching calls.
 pub trait Dispatch {
-    type Origin;
+    type Origin: Origin;
     type Response;
 
     fn dispatch(&self, origin: Self::Origin) -> DispatchResult<Self::Response>;
