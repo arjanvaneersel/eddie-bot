@@ -20,11 +20,11 @@ async fn on_error<T: Config + BotConfig>(error: poise::FrameworkError<'_, Data<T
     match error {
         poise::FrameworkError::Setup { error, .. } => panic!("Failed to start bot: {:?}", error),
         poise::FrameworkError::Command { error, ctx, .. } => {
-            println!("Error in command `{}`: {:?}", ctx.command().name, error,);
+            log::error!("Error in command `{}`: {:?}", ctx.command().name, error,);
         }
         error => {
             if let Err(e) = poise::builtins::on_error(error).await {
-                println!("Error while handling error: {}", e)
+                log::error!("Error while handling error: {}", e)
             }
         }
     }
@@ -67,30 +67,30 @@ impl<T: Config> DiscordTransport<T> {
             // This code is run before every command
             pre_command: |ctx| {
                 Box::pin(async move {
-                    println!("Executing command {}...", ctx.command().qualified_name);
+                    log::info!("Executing command {}...", ctx.command().qualified_name);
                 })
             },
             // This code is run after a command if it was successful (returned Ok)
             post_command: |ctx| {
                 Box::pin(async move {
-                    println!("Executed command {}!", ctx.command().qualified_name);
+                    log::info!("Executed command {}!", ctx.command().qualified_name);
                 })
             },
             // Every command invocation must pass this check to continue execution
-            command_check: Some(|ctx| {
-                Box::pin(async move {
-                    if ctx.author().id == 123456789 {
-                        return Ok(false);
-                    }
-                    Ok(true)
-                })
-            }),
+            // command_check: Some(|ctx| {
+            //     Box::pin(async move {
+            //         if ctx.author().id == 123456789 {
+            //             return Ok(false);
+            //         }
+            //         Ok(true)
+            //     })
+            // }),
             // Enforce command checks even for owners (enforced by default)
             // Set to true to bypass checks, which is useful for testing
             skip_checks_for_owners: false,
             event_handler: |_ctx, event, _framework, _data| {
                 Box::pin(async move {
-                    println!(
+                    log::info!(
                         "Got an event in event handler: {:?}",
                         event.snake_case_name()
                     );
@@ -103,7 +103,7 @@ impl<T: Config> DiscordTransport<T> {
         let framework = poise::Framework::builder()
             .setup(move |ctx, _ready, framework| {
                 Box::pin(async move {
-                    println!("Logged in as {}", _ready.user.name);
+                    log::info!("Logged in as {}", _ready.user.name);
                     poise::builtins::register_globally(ctx, &framework.options().commands).await?;
                     Ok(Data(std::marker::PhantomData))
                 })
