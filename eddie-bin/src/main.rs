@@ -3,7 +3,7 @@ use tokio::{
     signal::unix::{signal, SignalKind},
     task,
 };
-use transport::discord::DiscordTransport;
+use transport::{discord::DiscordTransport, telegram::TelegramTransport};
 
 #[derive(Clone)]
 struct App;
@@ -23,6 +23,12 @@ impl transport::discord::Config for App {
     type Token = DiscordToken;
 }
 
+env_param!(TelegramToken, "EDDIE_TELEGRAM_TOKEN");
+impl transport::telegram::Config for App {
+    type Bot = Self;
+    type Token = TelegramToken;
+}
+
 #[tokio::main]
 async fn main() {
     // let telegram_token = env::var("EDDIE_TELEGRAM_TOKEN").expect("No EDDIE_TELEGRAM_TOKEN in env");
@@ -33,6 +39,11 @@ async fn main() {
         if let Err(err) = discord.serve().await {
             log::error!("{}", err)
         }
+    });
+
+    let telegram_task = task::spawn(async move {
+        let telegram = TelegramTransport::<App>::new();
+        telegram.serve().await;
     });
 
     // Handle termination signal (CTRL+C)
@@ -49,6 +60,6 @@ async fn main() {
             println!("Received SIGTERM. Shutting down gracefully...");
         } => {}
         _ = discord_task => {}
-        // _ = telegram_task => {}
+        _ = telegram_task => {}
     }
 }

@@ -1,4 +1,5 @@
 pub mod discord;
+pub mod telegram;
 
 // #[cfg(test)]
 // mod tests {
