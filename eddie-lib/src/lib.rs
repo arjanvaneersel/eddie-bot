@@ -39,7 +39,7 @@ mod tests {
         assert!(result.is_ok());
         assert_eq!(
             result.unwrap(),
-            Some(Response::Info("Eddie version 0.1.0\nCopyright (c) 2024, Arjan van Eersel\n\nMore information: https://github.com/arjanvaneersel/eddie-bot".into())),
+            Some(Response::Reply("Eddie version 0.1.0\nCopyright (c) 2024, Arjan van Eersel\n\nMore information: https://github.com/arjanvaneersel/eddie-bot".into())),
         )
     }
 }

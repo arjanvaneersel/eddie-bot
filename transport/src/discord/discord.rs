@@ -53,6 +53,9 @@ impl<T: Config> DiscordTransport<T> {
                 commands::help::<T>(),
                 commands::info::<T>(),
                 commands::init::<T>(),
+                commands::set_admin::<T>(),
+                commands::register_faucet::<T>(),
+                commands::activate_faucet::<T>(),
             ],
             prefix_options: poise::PrefixFrameworkOptions {
                 prefix: Some("$".into()),

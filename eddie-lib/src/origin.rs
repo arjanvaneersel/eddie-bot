@@ -7,6 +7,15 @@ pub enum Origin {
     Telegram(String),
 }
 
+impl Origin {
+    pub fn inner(&self) -> String {
+        match self {
+            Self::Discord(v) => v.clone(),
+            Self::Telegram(v) => v.clone(),
+        }
+    }
+}
+
 impl std::fmt::Display for Origin {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = format!("{:?}", self).replace("\"", "");
