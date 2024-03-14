@@ -2,7 +2,7 @@ use crate::discord::{commands, Config};
 use eddie_lib::Config as BotConfig;
 use poise::{serenity_prelude as serenity, serenity_prelude::ClientBuilder};
 use std::{sync::Arc, time::Duration};
-use support::traits::Get;
+use support::traits::{dispatch::DispatchError, Get};
 
 pub struct Data<T: Config + BotConfig>(std::marker::PhantomData<T>);
 
@@ -17,6 +17,12 @@ async fn on_error<T: Config + BotConfig>(error: poise::FrameworkError<'_, Data<T
     match error {
         poise::FrameworkError::Setup { error, .. } => panic!("Failed to start bot: {:?}", error),
         poise::FrameworkError::Command { error, ctx, .. } => {
+            // Communicate dispatch errors to the sender.
+            if let Some(error) = error.downcast_ref::<DispatchError>() {
+                if let Err(why) = ctx.reply(error.to_string()).await {
+                    log::error!("Couldn't send answer to Discord: {:?}", why);
+                }
+            }
             log::error!("Error in command `{}`: {:?}", ctx.command().name, error,);
         }
         error => {
@@ -45,8 +51,8 @@ impl<T: Config> DiscordTransport<T> {
         let options = poise::FrameworkOptions {
             commands: vec![
                 commands::help::<T>(),
-                commands::version::<T>(),
-                commands::vote::<T>(),
+                commands::info::<T>(),
+                commands::init::<T>(),
             ],
             prefix_options: poise::PrefixFrameworkOptions {
                 prefix: Some("$".into()),
@@ -54,8 +60,8 @@ impl<T: Config> DiscordTransport<T> {
                     Duration::from_secs(3600),
                 ))),
                 additional_prefixes: vec![
-                    poise::Prefix::Literal("hey bot"),
-                    poise::Prefix::Literal("hey bot,"),
+                    poise::Prefix::Literal("hey eddie"),
+                    poise::Prefix::Literal("hey eddie,"),
                 ],
                 ..Default::default()
             },

@@ -10,9 +10,9 @@ Under heavy development, don't use in production.
 
 ## Features
 
-- [ ] Discord support
-- [ ] Telegram support
-- [ ] Testnet faucet
+- [x] Discord support
+- [x] Telegram support
+- [ ] Multinet faucets
 - [ ] Tipping
 
 ## License

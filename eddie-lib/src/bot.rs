@@ -1,7 +1,7 @@
 use crate::config::Config;
 use support::traits::dispatch::DispatchError;
 
-const MODULE: &'static str = "BOT";
+pub const MODULE: &'static str = "BOT";
 
 #[derive(Clone, Debug)]
 /// All potential bot errors.

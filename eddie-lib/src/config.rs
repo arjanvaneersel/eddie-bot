@@ -11,6 +11,6 @@ pub trait Config: BaseConfig {
     /// Type holding the rpc address.
     type SubstrateRPC: Get<String>;
 
-    // Type holding the path to the database file.
-    // type DBPath: Get<String>;
+    /// Type holding the path to the database file.
+    type DBPath: Get<String>;
 }

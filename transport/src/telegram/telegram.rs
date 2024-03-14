@@ -24,30 +24,24 @@ impl<T: Config> TelegramTransport<T> {
                     .reply_to_message_id(msg.id)
                     .await?;
             }
-            Command::Version => {
-                let response = (Call::<T>::Version).dispatch(origin);
-                log::info!("Received bot response: {:?}", response);
-                match response {
-                    Ok(Some(Response::Version(version))) => {
-                        if let Err(why) = bot
-                            .send_message(msg.chat.id, version)
-                            .reply_to_message_id(msg.id)
-                            .await
-                        {
-                            log::error!("Couldn't send answer to Telegram: {:?}", why);
-                        }
-                    }
-                    Ok(None) => {}
-                    Err(err) => {
-                        if let Err(why) = bot
-                            .send_message(msg.chat.id, err.to_string())
-                            .reply_to_message_id(msg.id)
-                            .await
-                        {
-                            log::error!("Couldn't send answer to Telegram: {:?}", why);
-                        }
-                        // Err(err)?
-                    }
+            Command::Info => match Call::<T>::Info.dispatch(origin) {
+                Ok(Some(Response::Info(info))) => {
+                    bot.send_message(msg.chat.id, info)
+                        .reply_to_message_id(msg.id)
+                        .await?;
+                }
+                Err(err) => {
+                    bot.send_message(msg.chat.id, err.to_string())
+                        .reply_to_message_id(msg.id)
+                        .await?;
+                }
+                _ => {}
+            },
+            Command::Init => {
+                if let Err(err) = Call::<T>::Init.dispatch(origin) {
+                    bot.send_message(msg.chat.id, err.to_string())
+                        .reply_to_message_id(msg.id)
+                        .await?;
                 }
             }
         }
@@ -84,7 +78,9 @@ enum Command {
     #[command(description = "get help")]
     Help,
     #[command(description = "get the bot version")]
-    Version,
+    Info,
+    #[command(description = "initialize the bot")]
+    Init,
     // #[command(description = "get some tokens from the faucet.")]
     // Faucet(String),
     // #[command(description = "handle a username.")]

@@ -13,10 +13,12 @@ impl support::traits::Config for App {}
 env_param!(Name, "EDDIE_NAME", "Eddie");
 env_param!(WalletSeed, "EDDIE_WALLET_SEED", "\\ALICE");
 env_param!(SubstrateRPC, "EDDIE_SUBSTRATE_RPC", "ws://127.0.0.1:9944");
+env_param!(DBPath, "EDDIE_DB_PATH", "db");
 impl eddie_lib::Config for App {
     type Name = Name;
     type WalletSeed = WalletSeed;
     type SubstrateRPC = SubstrateRPC;
+    type DBPath = DBPath;
 }
 
 env_param!(DiscordToken, "EDDIE_DISCORD_TOKEN");
