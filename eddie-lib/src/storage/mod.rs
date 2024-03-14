@@ -7,7 +7,7 @@ pub use storage::Storage;
 
 #[cfg(test)]
 mod tests {
-    use super::storage::Storage;
+    use super::storage::{Storage, StorageError};
     use crate::origin::Origin;
 
     #[test]

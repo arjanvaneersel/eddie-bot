@@ -1,6 +1,6 @@
 use crate::telegram::Config;
 use eddie_lib::{origin::Origin, Call, Response};
-use support::traits::{Dispatch, Get};
+use support::traits::{dispatch::DispatchError, Dispatch, Get};
 use teloxide::{prelude::*, utils::command::BotCommands};
 
 #[derive(BotCommands, Clone)]
@@ -29,6 +29,44 @@ enum Command {
     // UsernameAndAge { username: String, age: u8 },
 }
 
+async fn parse_call(
+    bot: Bot,
+    msg: Message,
+    response: Result<Option<Response>, DispatchError>,
+) -> ResponseResult<()> {
+    match response {
+        Ok(None) => {}
+        Ok(Some(Response::Say(reply))) => {
+            bot.send_message(msg.chat.id, reply).await?;
+        }
+        Ok(Some(Response::SayChan(reply_channel, reply))) => {
+            if let Ok(channel_id) = reply_channel.inner().parse::<i64>() {
+                bot.send_message(ChatId(channel_id), reply).await?;
+            } else {
+                log::error!("Invalid Discord channel ID: {}", reply_channel.inner())
+            }
+        }
+        Ok(Some(Response::Reply(reply))) => {
+            bot.send_message(msg.chat.id, reply)
+                .reply_to_message_id(msg.id)
+                .await?;
+        }
+        Ok(Some(Response::ReplyDirect(reply))) => {
+            if let Some(sender) = msg.from() {
+                bot.send_message(ChatId(sender.id.0 as i64), reply).await?;
+            } else {
+                log::error!("Msg has no sender")
+            }
+        }
+        Err(err) => {
+            bot.send_message(msg.chat.id, err.to_string())
+                .reply_to_message_id(msg.id)
+                .await?;
+        }
+    }
+    Ok(())
+}
+
 /// Processor of requests coming from Telegram.
 pub struct TelegramTransport<T: Config>(std::marker::PhantomData<T>);
 
@@ -49,76 +87,44 @@ impl<T: Config> TelegramTransport<T> {
                 bot.send_message(msg.chat.id, Command::descriptions().to_string())
                     .reply_to_message_id(msg.id)
                     .await?;
-            }
-            Command::Info => match Call::<T>::Info.dispatch(origin) {
-                Ok(Some(Response::Reply(info))) => {
-                    bot.send_message(msg.chat.id, info)
-                        .reply_to_message_id(msg.id)
-                        .await?;
-                }
-                Err(err) => {
-                    bot.send_message(msg.chat.id, err.to_string())
-                        .reply_to_message_id(msg.id)
-                        .await?;
-                }
-                _ => {}
-            },
-            Command::Init => {
-                if let Err(err) = Call::<T>::Init.dispatch(origin) {
-                    bot.send_message(msg.chat.id, err.to_string())
-                        .reply_to_message_id(msg.id)
-                        .await?;
-                }
-            }
-            Command::SetAdmin {
-                admin_origin,
-                remove,
-            } => {
-                if let Ok(admin_origin) = Origin::try_from(admin_origin) {
-                    match Call::<T>::SetAdmin(admin_origin, remove).dispatch(origin) {
-                        Ok(Some(Response::Reply(reply))) => {
-                            bot.send_message(msg.chat.id, reply)
-                                .reply_to_message_id(msg.id)
-                                .await?;
-                        }
-                        Err(err) => {
-                            bot.send_message(msg.chat.id, err.to_string())
-                                .reply_to_message_id(msg.id)
-                                .await?;
-                        }
-                        _ => {}
-                    }
-                } else {
-                    bot.send_message(msg.chat.id, "Invalid origin for admin.")
-                        .reply_to_message_id(msg.id)
-                        .await?;
-                }
-            }
-            Command::RegisterFaucetChannel => {
-                let channel = Origin::Telegram(msg.chat.id.to_string());
-                if let Err(err) = Call::<T>::RegisterFaucetChannel(channel).dispatch(origin) {
-                    bot.send_message(msg.chat.id, err.to_string())
-                        .reply_to_message_id(msg.id)
-                        .await?;
-                }
+                Ok(())
             }
             Command::UserId => {
                 bot.send_message(msg.chat.id, format!("Your userid is {}.", sender.id))
                     .reply_to_message_id(msg.id)
                     .await?;
+                Ok(())
+            }
+            Command::Info => parse_call(bot, msg, Call::<T>::Info.dispatch(origin)).await,
+            Command::Init => parse_call(bot, msg, Call::<T>::Init.dispatch(origin)).await,
+            Command::SetAdmin {
+                admin_origin,
+                remove,
+            } => {
+                if let Ok(admin_origin) = Origin::try_from(admin_origin) {
+                    parse_call(
+                        bot,
+                        msg,
+                        Call::<T>::SetAdmin(admin_origin, remove).dispatch(origin),
+                    )
+                    .await
+                } else {
+                    bot.send_message(msg.chat.id, "Invalid origin for admin.")
+                        .reply_to_message_id(msg.id)
+                        .await?;
+                    Ok(())
+                }
+            }
+            Command::RegisterFaucetChannel => {
+                let channel = Origin::Telegram(msg.chat.id.to_string());
+                parse_call(
+                    bot,
+                    msg,
+                    Call::<T>::RegisterFaucetChannel(channel).dispatch(origin),
+                )
+                .await
             }
         }
-
-        // Command::UsernameAndAge { username, age } => {
-        //     bot.send_message(
-        //         msg.chat.id,
-        //         format!("Your username is @{username} and age is {age}."),
-        //     )
-        //     .await?
-        // }
-        // };
-
-        Ok(())
     }
 
     pub async fn serve(&self) {
